@@ -326,36 +326,6 @@
     margin-top: 14px;
   }
 
-  .demo-toggle {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .switch {
-    width: 34px; height: 18px;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    border-radius: 100px;
-    position: relative;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .switch::after {
-    content: "";
-    position: absolute;
-    top: 2px; left: 2px;
-    width: 12px; height: 12px;
-    background: var(--muted);
-    border-radius: 50%;
-    transition: all 0.2s;
-  }
-  .switch.on { border-color: var(--danger); background: var(--danger-dim); }
-  .switch.on::after { left: 18px; background: var(--danger); }
-
   .footer-note {
     text-align: center;
     color: var(--muted);
@@ -426,17 +396,6 @@
     border: 1px solid var(--line);
     color: #d3daea;
   }
-  .chat-msg.bot.thinking {
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-  }
-  .chat-msg.error {
-    align-self: flex-start;
-    background: var(--danger-dim);
-    border: 1px solid rgba(255,107,107,0.35);
-    color: #ffd6d6;
-  }
   .chat-empty {
     color: var(--muted);
     font-size: 13px;
@@ -494,7 +453,6 @@
     transition: opacity 0.15s;
   }
   .chat-input-row button:hover { opacity: 0.9; }
-  .chat-input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -517,11 +475,6 @@
       <div id="keypad" class="keypad" style="display:none;"></div>
       <div id="options" class="options" style="display:none;"></div>
 
-      <div class="demo-toggle" id="jamToggleRow" style="display:none;">
-        <div class="switch" id="jamSwitch"></div>
-        <span>Simulate a jammed note (see how the ATM reacts)</span>
-      </div>
-
       <div class="cash-slot" id="cashSlot">
         <span class="label">Cash slot</span>
       </div>
@@ -538,7 +491,7 @@
       <div class="info-tag" id="infoTag">Step 0 · Idle</div>
       <div class="info-title" id="infoTitle">Ready when you are</div>
       <p class="info-body" id="infoBody">
-        Tap "Insert card" on the machine to start the simulation. At each step, this panel will explain the technology working behind the scenes — in plain language.
+        Tap "Insert card" on the machine to start. At each step, this panel will explain the technology working behind the scenes — in plain language.
       </p>
       <div class="tech-tags" id="techTags"></div>
     </div>
@@ -575,7 +528,6 @@
   let pin = "";
   let jamEnabled = false;
   let amount = 0;
-  const denomOrder = [100, 50, 20, 10];
 
   const el = id => document.getElementById(id);
 
@@ -659,3 +611,210 @@
   }
 
   function renderPinDots() {
+    const pinDotsEl = el("pinDots");
+    pinDotsEl.style.display = "flex";
+    pinDotsEl.innerHTML = "";
+    for (let i = 0; i < 4; i++) {
+      const dot = document.createElement("div");
+      dot.className = "pin-dot" + (i < pin.length ? " filled" : "");
+      pinDotsEl.appendChild(dot);
+    }
+  }
+
+  function updateATM() {
+    renderStepper();
+    renderInfo();
+    
+    const card = el("card");
+    const keypad = el("keypad");
+    const options = el("options");
+    const pinDots = el("pinDots");
+    const cashSlot = el("cashSlot");
+    const sensorStrip = el("sensorStrip");
+
+    keypad.style.display = "none";
+    options.style.display = "none";
+    pinDots.style.display = "none";
+    sensorStrip.style.display = "none";
+
+    const current = stages[stageIndex];
+
+    if (current === "idle") {
+      card.classList.remove("inserted");
+      setScreen("Welcome", "Insert your card to begin.");
+      options.style.display = "grid";
+      options.innerHTML = `<button class="key wide" onclick="insertCard()">Insert card</button>`;
+    } else if (current === "pin") {
+      card.classList.add("inserted");
+      setScreen("Enter PIN", "Enter your 4-digit PIN, then press OK.");
+      pinDots.style.display = "flex";
+      renderPinDots();
+      keypad.style.display = "grid";
+      keypad.innerHTML = `
+        <button class="key" onclick="pressKey('1')">1</button>
+        <button class="key" onclick="pressKey('2')">2</button>
+        <button class="key" onclick="pressKey('3')">3</button>
+        <button class="key" onclick="pressKey('4')">4</button>
+        <button class="key" onclick="pressKey('5')">5</button>
+        <button class="key" onclick="pressKey('6')">6</button>
+        <button class="key" onclick="pressKey('7')">7</button>
+        <button class="key" onclick="pressKey('8')">8</button>
+        <button class="key" onclick="pressKey('9')">9</button>
+        <button class="key" onclick="clearPin()">C</button>
+        <button class="key" onclick="pressKey('0')">0</button>
+        <button class="key" onclick="submitPin()">OK</button>
+      `;
+    } else if (current === "authenticating") {
+      pinDots.style.display = "flex";
+      renderPinDots();
+      setScreen("Please wait", "Sending encrypted request to your bank...");
+      setTimeout(() => {
+        stageIndex = stages.indexOf("amount");
+        updateATM();
+      }, 1200);
+    } else if (current === "amount") {
+      setScreen("Choose amount", "Available balance: $850.00");
+      options.style.display = "grid";
+      options.innerHTML = `
+        <button class="key wide" onclick="selectAmount(20)">$20</button>
+        <button class="key wide" onclick="selectAmount(50)">$50</button>
+        <button class="key wide" onclick="selectAmount(100)">$100</button>
+        <button class="key wide" onclick="selectAmount(200)">$200</button>
+      `;
+    } else if (current === "confirm") {
+      setScreen("Confirm", `Withdraw $${amount}.00 from checking?`);
+      options.style.display = "grid";
+      options.innerHTML = `
+        <button class="key" onclick="resetATM()">Cancel</button>
+        <button class="key" onclick="proceedToDispense()" style="background:var(--accent-dim); border-color:var(--accent); color:var(--accent);">Confirm</button>
+        <div style="grid-column: span 2; font-size: 11px; color: var(--muted); text-align: center; margin-top: 4px;">
+          <label style="cursor:pointer;"><input type="checkbox" id="jamCheck" onchange="toggleJam(this)"> Simulate a jammed note</label>
+        </div>
+      `;
+    } else if (current === "dispensing") {
+      setScreen("Dispensing", "Counting and inspecting your notes...");
+      sensorStrip.style.display = "flex";
+      document.querySelectorAll(".sensor-light").forEach(l => l.className = "sensor-light");
+
+      setTimeout(() => {
+        if (jamEnabled) {
+          el("s3").className = "sensor-light bad";
+          setScreen("Error: Jam Detected", "Optical sensor flagged an irregular note feed. Reversing mechanism...");
+          cashSlot.innerHTML = `<span class="label">Cash slot</span><div class="note reject show">$20</div>`;
+          setTimeout(() => { resetATM(); }, 2500);
+        } else {
+          document.querySelectorAll(".sensor-light").forEach(l => l.className = "sensor-light ok");
+          cashSlot.innerHTML = `<span class="label">Cash slot</span><div class="note show">$100</div><div class="note show">$100</div>`;
+          setScreen("Take your cash", `$${amount}.00 dispensed. New balance: $${850 - amount}.00`);
+          options.style.display = "grid";
+          options.innerHTML = `<button class="key wide" onclick="advanceStage()">Start over</button>`;
+        }
+      }, 1500);
+    } else if (current === "receipt") {
+      stageIndex = 0;
+      updateATM();
+    }
+  }
+
+  function insertCard() {
+    stageIndex = stages.indexOf("pin");
+    pin = "";
+    updateATM();
+  }
+
+  function pressKey(num) {
+    if (pin.length < 4) {
+      pin += num;
+      renderPinDots();
+    }
+  }
+
+  function clearPin() {
+    pin = "";
+    renderPinDots();
+  }
+
+  function submitPin() {
+    if (pin.length === 4) {
+      stageIndex = stages.indexOf("authenticating");
+      updateATM();
+    }
+  }
+
+  function selectAmount(val) {
+    amount = val;
+    stageIndex = stages.indexOf("confirm");
+    updateATM();
+  }
+
+  function proceedToDispense() {
+    stageIndex = stages.indexOf("dispensing");
+    updateATM();
+  }
+
+  function toggleJam(checkbox) {
+    jamEnabled = checkbox.checked;
+  }
+
+  function resetATM() {
+    stageIndex = 0;
+    pin = "";
+    amount = 0;
+    jamEnabled = false;
+    el("cashSlot").innerHTML = `<span class="label">Cash slot</span>`;
+    updateATM();
+  }
+
+  function advanceStage() {
+    resetATM();
+  }
+
+  // Simple QA Chat logic
+  const qaPairs = [
+    { q: "how does the bank verify my pin so fast", a: "Your PIN is hashed and compared using hardware security modules (HSMs) over secure banking networks in milliseconds." },
+    { q: "what happens if a note is damaged", a: "Optical and thickness sensors detect multi-feeds or folded notes, automatically diverting them to a reject bin." },
+    { q: "why is there a daily withdrawal limit", a: "It protects against fraud and manages physical cash inventory limits inside the ATM cassettes." }
+  ];
+
+  el("chatSend").addEventListener("click", handleChat);
+  el("chatInput").addEventListener("keypress", (e) => { if (e.key === "Enter") handleChat(); });
+
+  document.querySelectorAll(".chat-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      el("chatInput").value = chip.textContent;
+      handleChat();
+    });
+  });
+
+  function handleChat() {
+    const text = el("chatInput").value.trim();
+    if (!text) return;
+
+    el("chatEmpty")?.remove();
+    const log = el("chatLog");
+
+    const userMsg = document.createElement("div");
+    userMsg.className = "chat-msg user";
+    userMsg.textContent = text;
+    log.appendChild(userMsg);
+
+    el("chatInput").value = "";
+    log.scrollTop = log.scrollHeight;
+
+    setTimeout(() => {
+      const botMsg = document.createElement("div");
+      botMsg.className = "chat-msg bot";
+      
+      const match = qaPairs.find(p => text.toLowerCase().includes(p.q.slice(0, 10)));
+      botMsg.textContent = match ? match.a : "That's a core security/hardware feature simulated here! It ensures secure verification between the ATM terminal and the bank's core ledger.";
+      
+      log.appendChild(botMsg);
+      log.scrollTop = log.scrollHeight;
+    }, 600);
+  }
+
+  // Initial load call
+  updateATM();
+</script>
+</body>
+</html>
