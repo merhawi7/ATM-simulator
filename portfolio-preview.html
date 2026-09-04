@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Merhawi Ferede — Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#0a0e17; color:#c9d3e0; font-family:'Inter',sans-serif; line-height:1.6; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+  a { color:#5eead4; }
+  .wrap { max-width:920px; margin:0 auto; padding:0 24px; }
+  nav { display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid #1c2637; }
+  nav .logo { font-family:'JetBrains Mono',monospace; color:#e6edf7; font-weight:600; font-size:14px; }
+  nav .logo::before { content:"● "; color:#5eead4; }
+  nav .links { display:flex; gap:22px; font-size:13px; color:#8a97ad; }
+  header.hero { padding:56px 0 40px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:#5eead4; background:rgba(94,234,212,0.08); border:1px solid rgba(94,234,212,0.25); border-radius:100px; padding:5px 12px; margin-bottom:16px; }
+  .badge .dot { width:6px; height:6px; border-radius:50%; background:#5eead4; }
+  .badge.amber { color:#f59e0b; background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.25); }
+  h1 { font-size:44px; font-weight:700; color:#f2f5fa; margin-bottom:16px; letter-spacing:-0.01em; }
+  .lede { color:#8a97ad; font-size:16px; max-width:600px; margin-bottom:30px; }
+  .card { background:#0d1420; border:1px solid #1c2637; border-radius:16px; padding:24px 26px; }
+  .terminal-screen { background:#0a0e17; border:1px solid #1c2637; border-radius:10px; padding:18px; font-family:'JetBrains Mono',monospace; font-size:13px; margin-top:16px; }
+  .terminal-screen .prompt { color:#5eead4; }
+  .terminal-screen .out { color:#c9d3e0; margin-bottom:8px; }
+  .cursor { display:inline-block; width:7px; height:13px; background:#f59e0b; vertical-align:-2px; }
+  section { padding:48px 0; border-top:1px solid #1c2637; }
+  h2.section-title { font-size:22px; font-weight:700; color:#f2f5fa; margin-bottom:18px; }
+  .section-eyebrow { font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:#4a5568; margin-bottom:8px; }
+  p.body-text { color:#a8b3c4; font-size:14.5px; max-width:680px; }
+  .skills-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .skill-card { background:#0d1420; border:1px solid #1c2637; border-radius:12px; padding:16px 18px; }
+  .skill-card h3 { color:#5eead4; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; font-weight:600; }
+  .pill { display:inline-block; background:#141c2c; border:1px solid #232f45; color:#c9d3e0; font-size:12px; padding:4px 10px; border-radius:100px; margin:0 6px 6px 0; }
+  .job-card { background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:20px 22px; margin-bottom:14px; }
+  .job-card .dates { color:#4a5568; font-size:12px; margin-bottom:6px; }
+  .job-card .role { color:#f2f5fa; font-size:15.5px; font-weight:600; }
+  .job-card .org { color:#5eead4; font-size:13px; margin-bottom:10px; }
+  .job-card ul { padding-left:18px; color:#a8b3c4; font-size:13.5px; }
+  .job-card li { margin-bottom:4px; }
+  .proj-card { background:#0d1420; border:1px solid #1c2637; border-radius:16px; padding:22px 24px; margin-bottom:16px; }
+  .proj-card.featured { border:1px solid rgba(94,234,212,0.35); }
+  .proj-card .path { font-family:'JetBrains Mono',monospace; color:#4a5568; font-size:12px; margin-bottom:10px; }
+  .proj-card .name { color:#f2f5fa; font-size:16.5px; font-weight:700; margin-bottom:8px; }
+  .proj-card .desc { color:#8a97ad; font-size:13.5px; margin-bottom:14px; max-width:640px; }
+  .stack { margin-bottom:14px; }
+  .btn { display:inline-block; font-size:12.5px; color:#04241a; background:#5eead4; text-decoration:none; padding:8px 16px; border-radius:8px; font-weight:600; }
+  .certs-card { background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:8px 22px; }
+  .certs-card li { list-style:none; color:#a8b3c4; font-size:13.5px; padding:12px 0; border-top:1px solid #1c2637; }
+  .certs-card li:first-child { border-top:none; }
+  .certs-card li::before { content:"▸ "; color:#5eead4; }
+  .debug-card { background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:22px 24px; margin-bottom:14px; }
+  .debug-card h4 { color:#f59e0b; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; font-weight:600; }
+  .debug-card p, .debug-card li { color:#a8b3c4; font-size:13.5px; }
+  .debug-card code { font-family:'JetBrains Mono',monospace; color:#5eead4; background:#141c2c; padding:1px 6px; border-radius:4px; font-size:12.5px; }
+  .status { display:inline-block; color:#ff8080; background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); padding:3px 10px; border-radius:100px; font-size:12px; }
+  .fixed-status { display:inline-block; color:#5eead4; background:rgba(94,234,212,0.1); border:1px solid rgba(94,234,212,0.3); padding:3px 10px; border-radius:100px; font-size:12px; }
+  .checklist { padding-left:18px; margin:10px 0; }
+  .checklist li { margin-bottom:3px; }
+  .lesson { border-left:2px solid #f59e0b; padding-left:14px; margin-top:16px; color:#e6edf7; font-size:13.5px; }
+  .contact-footer { display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; }
+  .contact-lines .line { color:#a8b3c4; font-size:13.5px; margin:5px 0; }
+  .site-qr { display:flex; align-items:center; gap:14px; background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:14px 18px; }
+  .site-qr img { width:64px; height:64px; border-radius:6px; background:#fff; padding:4px; }
+  .site-qr .label { color:#4a5568; font-size:11px; margin-bottom:3px; }
+  .site-qr .url { color:#5eead4; font-size:13px; font-weight:600; }
+  footer.page-footer { padding:24px 0 50px; color:#4a5568; font-size:12px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="logo">merhawi@ferede</div>
+  <div class="links"><a href="#about">about</a><a href="#skills">skills</a><a href="#experience">experience</a><a href="#projects">projects</a><a href="#certs">certs</a><a href="#contact">contact</a></div>
+</nav>
+
+<header class="hero">
+  <div class="badge"><span class="dot"></span>infrastructure engineer &middot; java / ai developer</div>
+  <h1>Merhawi Ferede</h1>
+  <p class="lede">I keep hyperscale infrastructure running and build the software that sits on top of it — from GB200/GB300 AI clusters to Java services with LLMs wired in.</p>
+  <div class="card">
+    <div class="terminal-screen">
+      <div><span class="prompt">$</span> whoami</div>
+      <div class="out">Merhawi Ferede — Infrastructure Engineer / Java &amp; AI Developer</div>
+      <div><span class="prompt">$</span> cat role.txt</div>
+      <div class="out">5+ yrs at AWS &amp; Google data centers (GB200/GB300 AI infra) &middot; ~2 yrs Java/Spring Boot</div>
+      <div><span class="prompt">$</span> ./deploy-ticket.sh --status</div>
+      <div style="color:#8a97ad;">used by 30+ engineers &middot; ~15min manual process &rarr; one command</div>
+      <div style="margin-top:8px;"><span class="cursor"></span></div>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="section-eyebrow">01 &middot; about</div>
+  <h2 class="section-title">Both sides of the stack</h2>
+  <p class="body-text">I work both sides of the stack. At AWS and Google data centers, I troubleshoot Linux systems, routers, and switches inside AI infrastructure environments running NVIDIA GB200/GB300 systems — real hardware, real tickets, real uptime. As a Java developer, I build backend and full-stack applications with Spring Boot, REST APIs, and PostgreSQL, and I've started wiring LLMs and generative AI directly into that software — not as a chat widget bolted on the side, but as logic that actually drives what the application does. Five-plus years keeping systems reliable, nearly two building on top of them.</p>
+</section>
+
+<section id="skills">
+  <div class="section-eyebrow">02 &middot; skills</div>
+  <h2 class="section-title">Tools and stack</h2>
+  <div class="skills-grid">
+    <div class="skill-card"><h3>Languages</h3><span class="pill">Java</span><span class="pill">SQL</span><span class="pill">JavaScript</span><span class="pill">HTML</span><span class="pill">CSS</span></div>
+    <div class="skill-card"><h3>Backend</h3><span class="pill">Spring Boot</span><span class="pill">Spring MVC</span><span class="pill">REST APIs</span><span class="pill">JDBC</span><span class="pill">Maven</span><span class="pill">JUnit</span></div>
+    <div class="skill-card"><h3>Frontend</h3><span class="pill">React.js</span><span class="pill">Angular</span><span class="pill">Vue.js</span></div>
+    <div class="skill-card"><h3>Cloud / DevOps</h3><span class="pill">AWS</span><span class="pill">GCP</span><span class="pill">Cloud Run</span><span class="pill">GitHub Actions</span><span class="pill">CI/CD</span></div>
+    <div class="skill-card"><h3>Systems</h3><span class="pill">Linux</span><span class="pill">Git</span><span class="pill">PostgreSQL</span><span class="pill">Bash</span></div>
+    <div class="skill-card"><h3>Infrastructure</h3><span class="pill">Networking</span><span class="pill">Routers</span><span class="pill">Switches</span><span class="pill">GB200/GB300</span></div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="section-eyebrow">03 &middot; experience</div>
+  <h2 class="section-title">Where I've worked</h2>
+  <div class="job-card">
+    <div class="dates">2025 — Present</div>
+    <div class="role">Junior Software Developer</div>
+    <div class="org">Reality AI Lab (Remote)</div>
+    <ul><li>Built scalable REST APIs using Java and Spring Boot</li><li>Deployed cloud-native apps on GCP Cloud Run and Cloud Functions</li><li>Integrated AI/LLM-powered chatbot features into enterprise applications</li></ul>
+  </div>
+  <div class="job-card">
+    <div class="dates">2024 — Present</div>
+    <div class="role">Data Center Operations &amp; Networking</div>
+    <div class="org">AWS</div>
+    <ul><li>Troubleshot Linux systems, routers, switches, and optical infrastructure</li><li>Supported AI infrastructure environments (NVIDIA GB200/GB300 systems)</li></ul>
+  </div>
+  <div class="job-card">
+    <div class="dates">2024 — 2025</div>
+    <div class="role">Java Developer Trainee</div>
+    <div class="org">Revature</div>
+    <ul><li>Developed full-stack applications using Java, Spring Boot, REST APIs, PostgreSQL</li><li>Integrated Vue.js frontend with backend services</li></ul>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-eyebrow">04 &middot; projects</div>
+  <h2 class="section-title">What I've built</h2>
+
+  <div class="proj-card">
+    <div class="path">~/data-center/deploy-ticket.sh</div>
+    <span class="badge amber">new &middot; in production</span>
+    <div class="name">Ticket-to-Deploy Automation Script</div>
+    <div class="desc">A Linux/Bash CLI tool for network deployment work at the data center. Takes a ticket straight into the terminal and runs the whole workflow automatically.</div>
+    <div class="stack"><span class="pill">Bash</span><span class="pill">Linux CLI</span><span class="pill">Ticketing Systems</span><span class="pill">Automation</span></div>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/console-atm</div>
+    <span class="badge amber">java &middot; agentic ai</span>
+    <div class="name">AI-Powered Console ATM</div>
+    <div class="desc">A Java console ATM with natural-language input through an LLM API, routed to a Java execution engine, screened by an ML fraud model in real time.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">OpenAI API</span><span class="pill">Jackson</span><span class="pill">Weka</span><span class="pill">DL4J</span></div>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/banking-api</div>
+    <div class="name">Banking &amp; Money Transfer REST API</div>
+    <div class="desc">Secure banking backend with JWT authentication, role-based access control, and an LLM-based chatbot for customer support.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">PostgreSQL</span><span class="pill">JWT</span></div>
+  </div>
+
+  <div class="proj-card featured">
+    <div class="path">~/habits/streaktrack</div>
+    <span class="badge">new &middot; full-stack</span>
+    <div class="name">StreakTrack</div>
+    <div class="desc">Habit-tracking web app with account signup, guest mode, and a live leaderboard. Backend handles real auth and persistence, not a mockup.</div>
+    <div class="stack"><span class="pill">Backend API</span><span class="pill">Auth</span><span class="pill">Leaderboard</span><span class="pill">Render hosting</span></div>
+    <a class="btn" href="https://merhawi7.github.io/streaktrack-backend/" target="_blank">View project →</a>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/reservation-platform</div>
+    <div class="name">Digital Banking Reservation Platform</div>
+    <div class="desc">Backend scheduling system for banking service appointments, with REST APIs for booking and workflow automation.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">REST APIs</span></div>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/banking-ops-cli</div>
+    <div class="name">Banking Operations System (CLI)</div>
+    <div class="desc">A Java CLI application built with OOP and file handling to manage banking records and transaction workflows.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">OOP</span><span class="pill">File I/O</span></div>
+  </div>
+</section>
+
+<section id="certs">
+  <div class="section-eyebrow">05 &middot; certifications</div>
+  <h2 class="section-title">Certifications</h2>
+  <div class="certs-card">
+    <ul>
+      <li>AWS Certified Solutions Architect – Associate</li>
+      <li>REST API Development with Spring Boot</li>
+      <li>Spring Framework for Java Development</li>
+      <li>Java 8 Programming Fundamentals</li>
+      <li>Object-Oriented Programming in Java</li>
+      <li>Generative AI for Java and Spring Development</li>
+    </ul>
+  </div>
+</section>
+
+<section id="debug">
+  <div class="section-eyebrow">06 &middot; debugging notes</div>
+  <h2 class="section-title">StreakTrack: the 403 that wasn't permitAll()</h2>
+
+  <div class="debug-card">
+    <h4>The bug</h4>
+    <p style="margin-bottom:10px;">Deployed the Spring Boot backend to Render. <code>POST /api/auth/register</code> and <code>POST /api/auth/login</code> both returned <span class="status">HTTP 403 Forbidden</span> — even though everything on paper looked correct:</p>
+    <ul class="checklist">
+      <li>Spring Boot 3.3.4, Spring Security configured</li>
+      <li><code>/api/auth/**</code> set to <code>permitAll()</code></li>
+      <li>CSRF disabled, CORS configured</li>
+      <li>Controller mapping and request DTO matched</li>
+      <li>Backend running fine on Render</li>
+    </ul>
+  </div>
+
+  <div class="debug-card">
+    <h4>Root cause</h4>
+    <p>It wasn't the security config or the controller — it was the custom JWT filter. The filter ran on every request, including public auth endpoints, and rejected requests with no token before they ever reached the <code>permitAll()</code> rule. <strong style="color:#f2f5fa;">permitAll() only tells Spring Security's authorization layer to allow the route — it doesn't stop custom filters in the chain from running and rejecting the request first.</strong></p>
+  </div>
+
+  <div class="debug-card">
+    <h4>The fix</h4>
+    <p>Updated the JWT filter to skip public auth routes (<code>/api/auth/register</code>, <code>/api/auth/login</code>) and let unauthenticated requests to those paths pass through untouched, instead of blocking them before the security chain even evaluated <code>permitAll()</code>.</p>
+    <div style="margin-top:10px;"><span class="fixed-status">Resolved — both endpoints return 200</span></div>
+    <div class="lesson">Lesson: <code>permitAll()</code> governs authorization, not the filter chain. Any custom filter still runs first and can reject a request before Spring Security's rules are even checked.</div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-eyebrow">07 &middot; contact</div>
+  <h2 class="section-title">Reach out</h2>
+  <div class="card contact-footer">
+    <div class="contact-lines">
+      <p class="body-text" style="margin-bottom:12px;">Columbus, Ohio. Open to Java/backend and AI-adjacent roles, and always glad to talk infrastructure.</p>
+      <div class="line">mail merafe@gmail.com</div>
+      <div class="line">tel (443) 683-9974</div>
+      <div class="line">link linkedin.com/in/merhawi-ferede-dev</div>
+    </div>
+    <div class="site-qr">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATYAAAE2AQAAAADDx4MEAAACMElEQVR4nO2aTYrcMBBGX0UGL2XIAXIU9w3mSLmadJQ5QIO8HLD5spD815sMhKh7PNKisa0HdrWo+qpKMvGZsfz4FAaN+zcOhe1KmpGSE2MC8PM65edXt+NCnJckzRCtl91O05IkhS9hx2W4xcwGyF4Rf83kNQoA0cye/X3fiese7lc5WTrGtPy/9zbu71wcFoMpO0TF9zbuzDlJCRiTU45X0friKKOkZ3/fd+KO+VXw8+NPGS2/qsWVDCqPxDnf3WfaelTijg6h5AS4HKpKquslxrYetTgUcNr/+3wbKIFMSk4KLV7V4sirkEOVdukoz0qR3tajFncIVSU2JQCccro1qsWrmtzqEACjZtj0I89mTWn+UY8b33uBl2DqJaXFHvLd1r+qx3XEm8PGd0NxcBDf5q2H4mTgMPzL23EVrgMWAy/AJwx62dbXEtNPGEPb/6jEdeDvneJw73bZENOA4ZfyLA73V7fjKtxWkOcyIzfdT/VHlvxXt+MqXJHtnFr5edsk5JgDt/yqGkcp+3JV7rQ2Tcit3eI9rf6oxa21uLbcdi1HSuPXt35iTe7Y3w3AYas2X7V+SWUuWhm5QcLUUcpDFoOpb/tRdbk9XvkPKw4xmSnsnff0Fey4BNcBSwf+DvEtycYEZQN9MsCnp37fd+PYFIJV1N2mGk0/nspF65D0kd1DAbDb1LfzcJW5/XwJ2A2nTcWz99jvph+1uPP5Ep1PV5cascWrepy18+0vxf0BYWO1MgGeG8UAAAAASUVORK5CYII=" alt="QR code">
+      <div>
+        <div class="label">Full portfolio &amp; live site</div>
+        <div class="url">steady-granita-a49358.netlify.app</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="page-footer">built by hand, in Java-adjacent spirit · © 2026 Merhawi Ferede</footer>
+
+</div>
+</body>
+</html>
