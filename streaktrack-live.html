@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreakTrack — Live (connected to Render)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1565C0;
+    --primary-dark: #0D47A1;
+    --accent: #FF7043;
+    --accent-glow: rgba(255, 112, 67, 0.35);
+    --bg: #FAFAFA;
+    --card: #FFFFFF;
+    --text-primary: #212121;
+    --text-secondary: #757575;
+    --border: #ECECEC;
+    --success: #2E7D32;
+    --danger: #C62828;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--font-body);
+    background: linear-gradient(160deg, #EEF3FB 0%, #F7F5F2 100%);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 40px 16px;
+  }
+  .stage-label {
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 13px; color: var(--text-secondary); text-align: center; max-width: 500px;
+  }
+  .live-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success); margin-right: 6px; animation: blink 1.6s ease infinite;
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .phone {
+    width: 375px; height: 780px; background: #0d0d0d; border-radius: 44px; padding: 14px;
+    box-shadow: 0 30px 60px -20px rgba(13,71,161,0.35), 0 10px 25px -10px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 120px; height: 24px; background: #0d0d0d; border-radius: 0 0 16px 16px; z-index: 10; }
+  .screen { width: 100%; height: 100%; background: var(--bg); border-radius: 32px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+
+  .auth-view { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 36px 28px; background: linear-gradient(180deg, #FAFAFA 0%, #EEF3FB 100%); }
+  .wordmark { font-family: var(--font-display); font-weight: 700; font-size: 28px; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .tagline { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 24px; text-align: center; }
+  .field { width: 100%; margin-bottom: 12px; }
+  .field label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .field input { width: 100%; padding: 12px 13px; border-radius: 12px; border: 1.5px solid var(--border); font-size: 14.5px; background: var(--card); outline: none; font-family: var(--font-body); }
+  .field input:focus { border-color: var(--primary); }
+  .btn-primary { width: 100%; padding: 13px; border-radius: 12px; border: none; background: var(--primary); color: #fff; font-weight: 600; font-size: 14.5px; cursor: pointer; margin-top: 6px; }
+  .btn-primary:disabled { opacity: 0.6; cursor: default; }
+  .switch-link { margin-top: 16px; font-size: 12.5px; color: var(--primary); cursor: pointer; font-weight: 500; }
+  .error-msg { color: var(--danger); font-size: 12px; margin-top: 10px; text-align: center; min-height: 16px; }
+  .wake-note { margin-top: 20px; font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.5; padding: 10px 12px; background: rgba(21,101,192,0.06); border-radius: 10px; }
+
+  .app-view { display: none; flex-direction: column; height: 100%; }
+  .app-view.active { display: flex; }
+  .topbar { background: var(--primary); color: #fff; padding: 16px 18px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .topbar h1 { font-family: var(--font-display); font-size: 17.5px; font-weight: 600; margin: 0; }
+  .icon-btn { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 13px; }
+  .content { flex: 1; overflow-y: auto; padding: 14px; }
+
+  .habit-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .habit-name { font-weight: 600; font-size: 15px; color: var(--text-primary); }
+  .habit-desc { font-size: 12px; color: var(--text-secondary); margin: 2px 0 5px; }
+  .habit-streak { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--accent); }
+  .checkin-btn { flex-shrink: 0; padding: 8px 13px; border-radius: 10px; border: 1.5px solid var(--primary); background: transparent; color: var(--primary); font-weight: 600; font-size: 12px; cursor: pointer; }
+  .checkin-btn.done { border-color: var(--success); color: var(--success); background: rgba(46,125,50,0.06); cursor: default; }
+  .checkin-btn:disabled { opacity: 0.6; }
+
+  .empty-state { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
+  .empty-state .big-emoji { font-size: 36px; margin-bottom: 10px; }
+  .empty-state p { font-size: 13px; line-height: 1.5; }
+
+  .fabs { position: absolute; bottom: 18px; left: 18px; right: 18px; display: flex; justify-content: space-between; pointer-events: none; }
+  .fab { pointer-events: auto; width: 50px; height: 50px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 19px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.18); color: #fff; }
+  .fab-add { background: var(--primary); }
+  .fab-board { background: var(--accent); }
+
+  .sheet-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: flex-end; z-index: 20; }
+  .sheet-overlay.active { display: flex; }
+  .sheet { width: 100%; background: var(--card); border-radius: 22px 22px 0 0; padding: 22px 18px 26px; }
+  .sheet h2 { font-family: var(--font-display); font-size: 17px; margin: 0 0 14px; }
+  .sheet .field input { background: var(--bg); }
+  .sheet-actions { display: flex; gap: 10px; }
+  .btn-ghost { flex: 1; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 13.5px; cursor: pointer; }
+  .sheet-actions .btn-primary { flex: 1.4; margin-top: 0; }
+
+  .add-friend-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .add-friend-row input { flex: 1; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 13px; outline: none; }
+  .add-friend-row button { padding: 0 15px; border-radius: 10px; border: none; background: var(--primary); color: #fff; font-weight: 600; font-size: 12.5px; cursor: pointer; }
+  .lb-row { display: flex; align-items: center; gap: 10px; background: var(--card); padding: 13px 15px; border-radius: 13px; margin-bottom: 8px; }
+  .lb-row.me { border: 1.5px solid var(--primary); background: rgba(21,101,192,0.04); }
+  .lb-rank { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--primary); width: 24px; }
+  .lb-name { flex: 1; font-weight: 600; font-size: 14px; }
+  .lb-streak { font-family: var(--font-display); font-weight: 700; color: var(--accent); font-size: 13.5px; }
+  .back-row { display: flex; align-items: center; gap: 10px; }
+  .back-btn { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 13px; }
+
+  .toast { position: absolute; bottom: 86px; left: 50%; transform: translateX(-50%) translateY(16px); background: #212121; color: #fff; padding: 10px 16px; border-radius: 30px; font-size: 12.5px; font-weight: 500; opacity: 0; transition: all 0.25s ease; pointer-events: none; z-index: 30; white-space: nowrap; max-width: 90%; text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--danger); }
+
+  .spinner { width: 34px; height: 34px; border: 3px solid rgba(21,101,192,0.15); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .waking-overlay { position: absolute; inset: 0; background: var(--bg); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; z-index: 40; }
+  .waking-overlay.active { display: flex; }
+  .waking-overlay p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="stage-label"><span class="live-dot"></span>Connected to your real backend at streaktrack-backend-ullu.onrender.com — this actually registers users and stores data on your live server.</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screen">
+
+    <div class="waking-overlay" id="wakingOverlay">
+      <div class="spinner"></div>
+      <p><strong>Waking up your server...</strong><br>Render's free tier spins down when idle — this can take 30-60 seconds on the first request. Won't happen again until it's idle for a while.</p>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="auth-view" id="loginView">
+      <div class="wordmark">🔥 StreakTrack</div>
+      <div class="tagline">Live — talking to your real API</div>
+      <div class="field"><label>Username</label><input id="loginUsername" placeholder="Choose a username"></div>
+      <div class="field"><label>Password</label><input id="loginPassword" type="password" placeholder="••••••••"></div>
+      <button class="btn-primary" id="btnLogin" onclick="login()">Log in</button>
+      <div class="error-msg" id="loginError"></div>
+      <div class="switch-link" onclick="showAuth('registerView')">New here? Create an account</div>
+      <button class="btn-primary" id="btnGuest" onclick="continueAsGuest()" style="background: var(--accent); margin-top: 10px;">Continue as guest — no signup</button>
+      <div class="wake-note">First request may take up to a minute while the free-tier server wakes up.</div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-view" id="registerView" style="display:none;">
+      <div class="wordmark" style="margin-bottom:20px;">Create account</div>
+      <div class="field"><label>Username</label><input id="regUsername" placeholder="e.g. rahwa"></div>
+      <div class="field"><label>Email</label><input id="regEmail" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input id="regPassword" type="password" placeholder="Min 6 characters"></div>
+      <button class="btn-primary" id="btnRegister" onclick="register()">Sign up</button>
+      <div class="error-msg" id="registerError"></div>
+      <div class="switch-link" onclick="showAuth('loginView')">Already have an account? Log in</div>
+    </div>
+
+    <!-- HABIT LIST -->
+    <div class="app-view" id="habitListView">
+      <div class="topbar"><h1>My Habits</h1><button class="icon-btn" onclick="logout()" title="Log out">⏻</button></div>
+      <div class="content" id="habitListContent"></div>
+      <div class="fabs">
+        <button class="fab fab-board" onclick="openLeaderboard()">🏆</button>
+        <button class="fab fab-add" onclick="openAddSheet()">＋</button>
+      </div>
+      <div class="sheet-overlay" id="addSheetOverlay">
+        <div class="sheet">
+          <h2>New habit</h2>
+          <div class="field"><label>Name</label><input id="newHabitName" placeholder="e.g. Read 20 min"></div>
+          <div class="field"><label>Description (optional)</label><input id="newHabitDesc" placeholder="e.g. Every night"></div>
+          <div class="sheet-actions">
+            <button class="btn-ghost" onclick="closeAddSheet()">Cancel</button>
+            <button class="btn-primary" onclick="addHabit()">Save habit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="app-view" id="leaderboardView">
+      <div class="topbar"><div class="back-row"><button class="back-btn" onclick="showApp('habitListView')">←</button><h1>Leaderboard</h1></div></div>
+      <div class="content">
+        <div class="add-friend-row">
+          <input id="friendUsername" placeholder="Add friend by username">
+          <button onclick="addFriend()">Add</button>
+        </div>
+        <div id="leaderboardContent"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = "https://streaktrack-backend-ullu.onrender.com";
+  let token = null;
+  let currentUsername = null;
+
+  function showAuth(id) {
+    document.getElementById('loginView').style.display = id === 'loginView' ? 'flex' : 'none';
+    document.getElementById('registerView').style.display = id === 'registerView' ? 'flex' : 'none';
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('registerError').textContent = '';
+  }
+
+  function showApp(viewId) {
+    document.querySelectorAll('.auth-view').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+    if (viewId === 'habitListView') loadHabits();
+    if (viewId === 'leaderboardView') loadLeaderboard();
+  }
+
+  function setWaking(on) {
+    document.getElementById('wakingOverlay').classList.toggle('active', on);
+  }
+
+  async function apiCall(path, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+
+    const wakeTimer = setTimeout(() => setWaking(true), 1500); // only show wake screen if it's actually slow
+    try {
+      const res = await fetch(API_BASE + path, { ...options, headers });
+      clearTimeout(wakeTimer);
+      setWaking(false);
+      let body = null;
+      try { body = await res.json(); } catch (e) { /* no body */ }
+      if (!res.ok) {
+        const msg = (body && (body.message || body)) || `Error ${res.status}`;
+        throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+      }
+      return body;
+    } catch (err) {
+      clearTimeout(wakeTimer);
+      setWaking(false);
+      throw err;
+    }
+  }
+
+  async function login() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    errEl.textContent = '';
+    if (!username || !password) { errEl.textContent = 'Enter username and password'; return; }
+
+    const btn = document.getElementById('btnLogin');
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    try {
+      const data = await apiCall('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+      token = data.token;
+      currentUsername = data.username;
+      showToast(`Welcome back, ${currentUsername}`);
+      showApp('habitListView');
+    } catch (err) {
+      errEl.textContent = 'Login failed — check your username and password';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Log in';
+    }
+  }
+
+  async function register() {
+    const username = document.getElementById('regUsername').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const errEl = document.getElementById('registerError');
+    errEl.textContent = '';
+    if (!username || !email || password.length < 6) { errEl.textContent = 'Fill all fields; password needs 6+ characters'; return; }
+
+    const btn = document.getElementById('btnRegister');
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    try {
+      const data = await apiCall('/api/auth/register', { method: 'POST', body: JSON.stringify({ username, password, email }) });
+      token = data.token;
+      currentUsername = data.username;
+      showToast(`Account created — welcome, ${currentUsername}`);
+      showApp('habitListView');
+    } catch (err) {
+      errEl.textContent = 'Registration failed — username or email may already be taken';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign up';
+    }
+  }
+
+  async function continueAsGuest() {
+    const errEl = document.getElementById('loginError');
+    errEl.textContent = '';
+    const btn = document.getElementById('btnGuest');
+    btn.disabled = true;
+    btn.textContent = 'Setting up your guest account...';
+
+    const suffix = Math.random().toString(36).slice(2, 8);
+    const username = 'guest_' + suffix;
+    const email = 'guest_' + suffix + '@streaktrack-demo.com';
+    const password = 'guestpass' + suffix;
+
+    try {
+      const data = await apiCall('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ username, password, email })
+      });
+      token = data.token;
+      currentUsername = data.username;
+      showToast(`Welcome, ${currentUsername} 👋`);
+      showApp('habitListView');
+    } catch (err) {
+      errEl.textContent = 'Could not create a guest session: ' + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Continue as guest — no signup';
+    }
+  }
+
+  function logout() {
+    token = null; currentUsername = null;
+    showAuth('loginView');
+    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+  }
+
+  async function loadHabits() {
+    const el = document.getElementById('habitListContent');
+    el.innerHTML = `<div class="empty-state"><div class="spinner"></div><p>Loading your habits...</p></div>`;
+    try {
+      const habits = await apiCall('/api/habits');
+      renderHabits(habits);
+    } catch (err) {
+      el.innerHTML = `<div class="empty-state"><div class="big-emoji">⚠️</div><p>Couldn't load habits.<br>${escapeHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderHabits(habits) {
+    const el = document.getElementById('habitListContent');
+    if (!habits || habits.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="big-emoji">🌱</div><p>No habits yet.<br>Tap + to start your first streak.</p></div>`;
+      return;
+    }
+    el.innerHTML = habits.map(h => `
+      <div class="habit-card">
+        <div style="flex:1; min-width:0;">
+          <div class="habit-name">${escapeHtml(h.name)}</div>
+          ${h.description ? `<div class="habit-desc">${escapeHtml(h.description)}</div>` : ''}
+          <div class="habit-streak">🔥 ${h.currentStreak} day streak · best ${h.longestStreak}</div>
+        </div>
+        <button class="checkin-btn ${h.checkedInToday ? 'done' : ''}" onclick="checkIn(${h.id}, this)" ${h.checkedInToday ? 'disabled' : ''}>
+          ${h.checkedInToday ? '✓ Done' : 'Check in'}
+        </button>
+      </div>
+    `).join('');
+  }
+
+  async function checkIn(id, btnEl) {
+    btnEl.disabled = true;
+    btnEl.textContent = '...';
+    try {
+      await apiCall(`/api/habits/${id}/check-in`, { method: 'POST' });
+      showToast('Checked in 🔥');
+      loadHabits();
+    } catch (err) {
+      showToast('Check-in failed: ' + err.message, true);
+      btnEl.disabled = false;
+      btnEl.textContent = 'Check in';
+    }
+  }
+
+  function openAddSheet() { document.getElementById('addSheetOverlay').classList.add('active'); }
+  function closeAddSheet() {
+    document.getElementById('addSheetOverlay').classList.remove('active');
+    document.getElementById('newHabitName').value = '';
+    document.getElementById('newHabitDesc').value = '';
+  }
+
+  async function addHabit() {
+    const name = document.getElementById('newHabitName').value.trim();
+    const description = document.getElementById('newHabitDesc').value.trim();
+    if (!name) { showToast('Give your habit a name', true); return; }
+    try {
+      await apiCall('/api/habits', { method: 'POST', body: JSON.stringify({ name, description }) });
+      closeAddSheet();
+      showToast('Habit added');
+      loadHabits();
+    } catch (err) {
+      showToast('Failed to add habit: ' + err.message, true);
+    }
+  }
+
+  function openLeaderboard() { showApp('leaderboardView'); }
+
+  async function loadLeaderboard() {
+    const el = document.getElementById('leaderboardContent');
+    el.innerHTML = `<div class="empty-state"><div class="spinner"></div><p>Loading leaderboard...</p></div>`;
+    try {
+      const entries = await apiCall('/api/leaderboard');
+      renderLeaderboard(entries);
+    } catch (err) {
+      el.innerHTML = `<div class="empty-state"><p>Couldn't load leaderboard.<br>${escapeHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function renderLeaderboard(entries) {
+    const el = document.getElementById('leaderboardContent');
+    if (!entries || entries.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="big-emoji">👥</div><p>No one on your leaderboard yet.<br>Add a friend above.</p></div>`;
+      return;
+    }
+    el.innerHTML = entries.map((e, i) => `
+      <div class="lb-row ${e.username === currentUsername ? 'me' : ''}">
+        <div class="lb-rank">#${i + 1}</div>
+        <div class="lb-name">${escapeHtml(e.username)}${e.username === currentUsername ? ' (you)' : ''}</div>
+        <div class="lb-streak">${e.totalCurrentStreak} 🔥</div>
+      </div>
+    `).join('');
+  }
+
+  async function addFriend() {
+    const username = document.getElementById('friendUsername').value.trim();
+    if (!username) return;
+    try {
+      await apiCall('/api/friends', { method: 'POST', body: JSON.stringify({ username }) });
+      document.getElementById('friendUsername').value = '';
+      showToast(`Added ${username}`);
+      loadLeaderboard();
+    } catch (err) {
+      showToast('Could not add friend: ' + err.message, true);
+    }
+  }
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = String(s == null ? '' : s);
+    return div.innerHTML;
+  }
+
+  let toastTimer;
+  function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.toggle('error', !!isError);
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+</script>
+
+</body>
+</html>
