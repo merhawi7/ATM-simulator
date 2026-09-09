@@ -236,6 +236,47 @@
     <div style="margin-top:10px;"><span class="fixed-status">Resolved — both endpoints return 200</span></div>
     <div class="lesson">Lesson: <code>permitAll()</code> governs authorization, not the filter chain. Any custom filter still runs first and can reject a request before Spring Security's rules are even checked.</div>
   </div>
+
+  <h2 class="section-title" style="margin-top:36px;">Ledger — Core Banking Engine: how it's built, and what I fixed along the way</h2>
+
+  <div class="debug-card">
+    <h4>How it works</h4>
+    <p style="margin-bottom:10px;">Ledger models the account logic behind a real bank's ledger, built around a small, focused class hierarchy:</p>
+    <ul class="checklist">
+      <li><code>Account</code> — abstract base class holding balance, owner, and transaction history</li>
+      <li><code>CheckingAccount</code> / <code>SavingsAccount</code> — subclasses overriding available-funds rules (overdraft vs. interest)</li>
+      <li><code>Transaction</code> — an immutable log entry with timestamp, type, amount, optional note, and optional counterparty</li>
+      <li><code>Bank</code> — owns all accounts, opens new ones, and coordinates transfers between them</li>
+      <li><code>BankApp</code> — console menu that wires it all together (deposit, withdraw, transfer, view history, apply interest)</li>
+    </ul>
+  </div>
+
+  <div class="debug-card">
+    <h4>The bug</h4>
+    <p>Two separate issues showed up while building this. First, <code>CheckingAccount</code>'s $100 overdraft support was implemented by duplicating balance-adjustment logic directly in the subclass, which got messy and error-prone fast. Second, <code>Bank.transfer()</code> called the normal <code>withdraw()</code>/<code>deposit()</code> methods <em>and</em> a separate logging call — which meant every transfer wrote <span class="status">two transaction entries per account</span> instead of one.</p>
+  </div>
+
+  <div class="debug-card">
+    <h4>Root cause</h4>
+    <p><code>Account</code> kept its balance field fully private with no shared hook for subclasses to safely adjust it, so <code>CheckingAccount</code> had no clean way to plug in overdraft rules other than re-implementing withdraw from scratch. Separately, <code>withdraw()</code>/<code>deposit()</code> already logged a transaction internally — so the extra manual logging call after them was redundant, and nothing caught the duplication because each call looked correct in isolation.</p>
+  </div>
+
+  <div class="debug-card">
+    <h4>The fix</h4>
+    <p>Refactored <code>Account</code> to expose two protected hooks: <code>getAvailableFunds()</code> (which <code>CheckingAccount</code> overrides to add the $100 overdraft) and <code>applyBalanceChange()</code> (a single method that adjusts the balance <em>and</em> logs exactly one transaction). Added dedicated <code>transferOut()</code>/<code>transferIn()</code> methods so each leg of a transfer logs once, with the counterparty's account number and name attached — instead of double-logging through generic withdraw/deposit calls.</p>
+    <div style="margin-top:10px;"><span class="fixed-status">Resolved — every transaction now logs exactly once, overdraft logic lives in one place</span></div>
+    <div class="lesson">Lesson: when a subclass needs to bend a rule (like allowing overdraft), give it a single protected hook to override — not a reason to re-implement the whole method.</div>
+  </div>
+
+  <div class="debug-card">
+    <h4>What's next</h4>
+    <ul class="checklist">
+      <li>Persist accounts to a real database (PostgreSQL) instead of in-memory storage</li>
+      <li>Wrap the same logic in a Spring Boot REST API layer</li>
+      <li>Add JUnit tests covering transfers, overdraft limits, and interest calculations</li>
+      <li>Add concurrency safety for simultaneous transactions on the same account</li>
+    </ul>
+  </div>
 </section>
 
 <section id="contact">
