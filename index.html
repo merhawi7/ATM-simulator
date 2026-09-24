@@ -131,6 +131,8 @@
   section.view { border-top:none; padding:40px 0 48px; animation:fadeView .35s ease both; }
   @keyframes fadeView { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   @media (prefers-reduced-motion: reduce) { section.view { animation:none; } }
+  /* Home shows the whole page; other tabs show a single section */
+  body.is-home section.view { border-top:1px solid #1c2637; padding:48px 0; animation:none; }
 </style>
 </head>
 <body>
@@ -266,12 +268,13 @@
     <div class="stack"><span class="pill">Java</span><span class="pill">OOP</span><span class="pill">File I/O</span></div>
   </div>
 
-  <div class="proj-card">
+  <div class="proj-card featured">
     <div class="path">~/java/ledger-banking-engine</div>
-    <span class="badge amber">new &middot; java</span>
+    <span class="badge amber">new &middot; live demo</span>
     <div class="name">Ledger — Core Banking Engine</div>
-    <div class="desc">A Java console banking system modeling the account logic behind a real bank's ledger: checking and savings accounts with a $100 overdraft limit, transfers with notes and counterparty tracking, timestamped transaction history, and monthly interest calculation.</div>
-    <div class="stack"><span class="pill">Java</span><span class="pill">OOP</span><span class="pill">Console App</span></div>
+    <div class="desc">A banking engine modeling the account logic behind a real bank's ledger: checking and savings accounts with overdraft support, transfers with notes and counterparty tracking, timestamped transaction history, and monthly interest calculation. It started as a Java console app, then I rebuilt it as a Spring Boot REST API and deployed it, so anyone can click through it live.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">REST API</span><span class="pill">Docker</span><span class="pill">OOP</span></div>
+    <a class="btn" href="https://lnkd.in/e-q-rM_c" target="_blank" rel="noopener">View project →</a><a class="btn ghost" href="https://lnkd.in/e9spudmC" target="_blank" rel="noopener">Source code →</a>
   </div>
 
   <div class="proj-card featured">
@@ -281,7 +284,7 @@
     <div class="desc">A browser game where you run the desk between two rival trading agents. ARIA chases momentum and breakouts, VESPER hunts oversold names and mean reversion. Approve or reject each pitch in 12 seconds across ten rounds on a simulated market, or watch the two agents play each other. Best runs are saved in the browser. The whole game is a single HTML file with no dependencies.</div>
     <div class="stack"><span class="pill">JavaScript</span><span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">GitHub Pages</span></div>
     <div class="approved">✓ Approved by the Handshake team and featured in Learn Hub</div><br>
-    <a class="btn" href="https://merhawi7.github.io/mera-stock-showdown/" target="_blank">Play the game →</a><a class="btn ghost" href="https://github.com/merhawi7/mera-stock-showdown" target="_blank">Source →</a>
+    <a class="btn" href="https://merhawi7.github.io/mera-stock-showdown/" target="_blank">View project →</a><a class="btn ghost" href="https://github.com/merhawi7/mera-stock-showdown" target="_blank">Source →</a>
   </div>
 </section>
 
@@ -360,10 +363,16 @@
   </div>
 
   <div class="debug-card">
+    <h4>Shipped since</h4>
+    <p>Ledger started as a console app. I rebuilt it as a Spring Boot REST API, packaged it with Docker, and deployed it, so the same account logic can now be tried through a live demo instead of just read about. The bug I'm glad I caught along the way: a ledger that writes two entries per transfer quietly corrupts its own history. The fix was to log exactly once per balance change, whichever path triggers it.</p>
+    <div style="margin-top:10px;"><span class="fixed-status">Live — REST API deployed, demo open to anyone</span></div>
+    <div style="margin-top:14px;"><a class="btn" href="https://lnkd.in/e-q-rM_c" target="_blank" rel="noopener">View project →</a><a class="btn ghost" href="https://lnkd.in/e9spudmC" target="_blank" rel="noopener">Source code →</a></div>
+  </div>
+
+  <div class="debug-card">
     <h4>What's next</h4>
     <ul class="checklist">
       <li>Persist accounts to a real database (PostgreSQL) instead of in-memory storage</li>
-      <li>Wrap the same logic in a Spring Boot REST API layer</li>
       <li>Add JUnit tests covering transfers, overdraft limits, and interest calculations</li>
       <li>Add concurrency safety for simultaneous transactions on the same account</li>
     </ul>
@@ -441,7 +450,9 @@
 
   function show(id) {
     if (!views[id]) id = 'home';
-    ids.forEach(function (k) { if (views[k]) views[k].hidden = (k !== id); });
+    var all = (id === 'home');
+    document.body.classList.toggle('is-home', all);
+    ids.forEach(function (k) { if (views[k]) views[k].hidden = !(all || k === id); });
     links.forEach(function (a) {
       var on = a.getAttribute('href') === '#' + id;
       a.classList.toggle('active', on);
