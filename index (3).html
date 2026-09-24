@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merhawi Ferede — Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#0a0e17; color:#c9d3e0; font-family:'Inter',sans-serif; line-height:1.6; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+  a { color:#5eead4; }
+  .wrap { max-width:920px; margin:0 auto; padding:0 24px; }
+  nav { display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid #1c2637; }
+  nav .logo { font-family:'JetBrains Mono',monospace; color:#e6edf7; font-weight:600; font-size:14px; }
+  nav .logo::before { content:"● "; color:#5eead4; }
+  nav .links { display:flex; gap:22px; font-size:13px; color:#8a97ad; }
+  header.hero { padding:56px 0 40px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:#5eead4; background:rgba(94,234,212,0.08); border:1px solid rgba(94,234,212,0.25); border-radius:100px; padding:5px 12px; margin-bottom:16px; }
+  .badge .dot { width:6px; height:6px; border-radius:50%; background:#5eead4; }
+  .badge.amber { color:#f59e0b; background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.25); }
+  h1 { font-size:44px; font-weight:700; color:#f2f5fa; margin-bottom:16px; letter-spacing:-0.01em; }
+  .lede { color:#8a97ad; font-size:16px; max-width:600px; margin-bottom:30px; }
+  .card { background:#0d1420; border:1px solid #1c2637; border-radius:16px; padding:24px 26px; }
+  .terminal-screen { background:#0a0e17; border:1px solid #1c2637; border-radius:10px; padding:18px; font-family:'JetBrains Mono',monospace; font-size:13px; margin-top:16px; }
+  .terminal-screen .prompt { color:#5eead4; }
+  .terminal-screen .out { color:#c9d3e0; margin-bottom:8px; }
+  .cursor { display:inline-block; width:7px; height:13px; background:#f59e0b; vertical-align:-2px; }
+  section { padding:48px 0; border-top:1px solid #1c2637; }
+  h2.section-title { font-size:22px; font-weight:700; color:#f2f5fa; margin-bottom:18px; }
+  .section-eyebrow { font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:#4a5568; margin-bottom:8px; }
+  p.body-text { color:#a8b3c4; font-size:14.5px; max-width:680px; }
+  .skills-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .skill-card { background:#0d1420; border:1px solid #1c2637; border-radius:12px; padding:16px 18px; }
+  .skill-card h3 { color:#5eead4; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; font-weight:600; }
+  .pill { display:inline-block; background:#141c2c; border:1px solid #232f45; color:#c9d3e0; font-size:12px; padding:4px 10px; border-radius:100px; margin:0 6px 6px 0; }
+  .job-card { background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:20px 22px; margin-bottom:14px; }
+  .job-card .dates { color:#4a5568; font-size:12px; margin-bottom:6px; }
+  .job-card .role { color:#f2f5fa; font-size:15.5px; font-weight:600; }
+  .job-card .org { color:#5eead4; font-size:13px; margin-bottom:10px; }
+  .job-card ul { padding-left:18px; color:#a8b3c4; font-size:13.5px; }
+  .job-card li { margin-bottom:4px; }
+  .proj-card { background:#0d1420; border:1px solid #1c2637; border-radius:16px; padding:22px 24px; margin-bottom:16px; }
+  .proj-card.featured { border:1px solid rgba(94,234,212,0.35); }
+  .proj-card .path { font-family:'JetBrains Mono',monospace; color:#4a5568; font-size:12px; margin-bottom:10px; }
+  .proj-card .name { color:#f2f5fa; font-size:16.5px; font-weight:700; margin-bottom:8px; }
+  .proj-card .desc { color:#8a97ad; font-size:13.5px; margin-bottom:14px; max-width:640px; }
+  .stack { margin-bottom:14px; }
+  .btn { display:inline-block; font-size:12.5px; color:#04241a; background:#5eead4; text-decoration:none; padding:8px 16px; border-radius:8px; font-weight:600; }
+  .certs-card { background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:8px 22px; }
+  .certs-card li { list-style:none; color:#a8b3c4; font-size:13.5px; padding:12px 0; border-top:1px solid #1c2637; }
+  .certs-card li:first-child { border-top:none; }
+  .certs-card li::before { content:"▸ "; color:#5eead4; }
+  .debug-card { background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:22px 24px; margin-bottom:14px; }
+  .debug-card h4 { color:#f59e0b; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; font-weight:600; }
+  .debug-card p, .debug-card li { color:#a8b3c4; font-size:13.5px; }
+  .debug-card code { font-family:'JetBrains Mono',monospace; color:#5eead4; background:#141c2c; padding:1px 6px; border-radius:4px; font-size:12.5px; }
+  .status { display:inline-block; color:#ff8080; background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); padding:3px 10px; border-radius:100px; font-size:12px; }
+  .fixed-status { display:inline-block; color:#5eead4; background:rgba(94,234,212,0.1); border:1px solid rgba(94,234,212,0.3); padding:3px 10px; border-radius:100px; font-size:12px; }
+  .checklist { padding-left:18px; margin:10px 0; }
+  .checklist li { margin-bottom:3px; }
+  .lesson { border-left:2px solid #f59e0b; padding-left:14px; margin-top:16px; color:#e6edf7; font-size:13.5px; }
+  .contact-footer { display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; }
+  .contact-lines .line { color:#a8b3c4; font-size:13.5px; margin:5px 0; }
+  .site-qr { display:flex; align-items:center; gap:14px; background:#0d1420; border:1px solid #1c2637; border-radius:14px; padding:14px 18px; }
+  .site-qr img { width:64px; height:64px; border-radius:6px; background:#fff; padding:4px; }
+  .site-qr .label { color:#4a5568; font-size:11px; margin-bottom:3px; }
+  .site-qr .url { color:#5eead4; font-size:13px; font-weight:600; }
+  footer.page-footer { padding:24px 0 50px; color:#4a5568; font-size:12px; text-align:center; }
+  .btn.ghost { background:transparent; color:#5eead4; border:1px solid rgba(94,234,212,0.35); margin-left:8px; }
+  .approved { display:inline-block; font-size:12px; color:#5eead4; background:rgba(94,234,212,0.08); border:1px solid rgba(94,234,212,0.25); padding:4px 12px; border-radius:100px; margin:0 0 14px; }
+  /* ---- navigation, links & buttons polish ---- */
+  html { scroll-behavior:smooth; }
+  section { scroll-margin-top:72px; }
+  nav { position:sticky; top:0; z-index:20; background:rgba(10,14,23,0.88); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  nav .logo { text-decoration:none; }
+  nav .links { gap:6px; }
+  nav .links a { color:#8a97ad; text-decoration:none; padding:6px 12px; border-radius:8px; transition:color .15s ease, background .15s ease; }
+  nav .links a:hover { color:#f2f5fa; background:#141c2c; }
+  nav .links a.active { color:#5eead4; background:rgba(94,234,212,0.08); }
+  a:focus-visible, .btn:focus-visible { outline:2px solid #5eead4; outline-offset:3px; border-radius:6px; }
+  .btn { transition:transform .12s ease, filter .15s ease, background .15s ease, border-color .15s ease; }
+  .btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
+  .btn.ghost:hover { background:rgba(94,234,212,0.08); border-color:rgba(94,234,212,0.6); filter:none; }
+  .hero .lede { margin-bottom:22px; }
+  .cta-row { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 30px; }
+  .cta-row .btn { padding:10px 20px; font-size:13.5px; }
+  .cta-row .btn.ghost { margin-left:0; }
+  .contact-lines .line { display:flex; gap:14px; align-items:baseline; }
+  .contact-lines .k { font-family:'JetBrains Mono',monospace; font-size:12px; color:#4a5568; width:44px; flex:none; text-transform:uppercase; letter-spacing:.04em; }
+  .contact-lines .line a { color:#e6edf7; text-decoration:none; border-bottom:1px solid #232f45; transition:color .15s ease, border-color .15s ease; }
+  .contact-lines .line a:hover { color:#5eead4; border-color:#5eead4; }
+  a.site-qr { text-decoration:none; transition:border-color .15s ease, transform .12s ease; }
+  a.site-qr:hover { border-color:rgba(94,234,212,0.5); transform:translateY(-1px); }
+  @media (max-width:700px) {
+    nav { flex-direction:column; align-items:flex-start; gap:8px; padding:14px 0; }
+    nav .links { flex-wrap:wrap; margin-left:-12px; }
+    h1 { font-size:34px; }
+    .skills-grid { grid-template-columns:1fr; }
+    .contact-footer { flex-direction:column; align-items:flex-start; }
+  }
+  nav { justify-content:flex-start; }
+  nav .links { margin-left:-12px; }
+  /* ---- hero polish ---- */
+  header.hero { position:relative; padding:64px 0 44px; }
+  header.hero::before { content:""; position:absolute; left:-80px; top:-20px; width:560px; height:360px; background:radial-gradient(closest-side, rgba(94,234,212,0.10), rgba(94,234,212,0) 70%); pointer-events:none; z-index:-1; }
+  header.hero .badge { padding:6px 14px; letter-spacing:.08em; font-weight:500; margin-bottom:22px; }
+  header.hero .badge .dot { box-shadow:0 0 0 0 rgba(94,234,212,0.6); animation:pulse 2.2s ease-out infinite; }
+  h1 { font-size:clamp(38px, 7vw, 60px); font-weight:800; line-height:1.05; letter-spacing:-0.025em; margin-bottom:20px; }
+  h1 .accent { background:linear-gradient(90deg, #5eead4 0%, #7dd3fc 100%); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; }
+  .lede { font-size:clamp(16px, 2.2vw, 19px); line-height:1.65; color:#9aa7bc; max-width:640px; }
+  .lede strong { color:#e6edf7; font-weight:600; }
+  header.hero .badge, header.hero h1, header.hero .lede, header.hero .cta-row, header.hero .card { animation:rise .6s ease both; }
+  header.hero h1 { animation-delay:.05s; }
+  header.hero .lede { animation-delay:.1s; }
+  header.hero .cta-row { animation-delay:.15s; }
+  header.hero .card { animation-delay:.2s; }
+  @keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  @keyframes pulse { 0% { box-shadow:0 0 0 0 rgba(94,234,212,0.55); } 70% { box-shadow:0 0 0 8px rgba(94,234,212,0); } 100% { box-shadow:0 0 0 0 rgba(94,234,212,0); } }
+  @media (prefers-reduced-motion: reduce) { header.hero * { animation:none !important; } html { scroll-behavior:auto; } }
+  /* ---- hero focus cards ---- */
+  .focus { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 0 24px; max-width:700px; animation:rise .6s ease .13s both; }
+  .focus-card { background:#0d1420; border:1px solid #1c2637; border-radius:12px; padding:14px 16px 8px; }
+  .focus-card:first-child { border-top:2px solid rgba(94,234,212,0.5); }
+  .focus-card:last-child { border-top:2px solid rgba(245,158,11,0.5); }
+  .focus-label { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#8a97ad; margin-bottom:10px; }
+  @media (max-width:700px) { .focus { grid-template-columns:1fr; } }
+  @media (prefers-reduced-motion: reduce) { .focus { animation:none; } }
+  /* ---- one section at a time ---- */
+  [hidden] { display:none !important; }
+  section.view { border-top:none; padding:40px 0 48px; animation:fadeView .35s ease both; }
+  @keyframes fadeView { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce) { section.view { animation:none; } }
+  /* Home shows the whole page; other tabs show a single section */
+  body.is-home section.view { border-top:1px solid #1c2637; padding:48px 0; animation:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav id="top">
+  <div class="links"><a href="#home">Home</a><a href="#about">About</a><a href="#skills">Skills</a><a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#certs">Certs</a><a href="#debug">Notes</a><a href="#contact">Contact</a></div>
+</nav>
+
+<header class="hero view" id="home">
+  <div class="badge"><span class="dot"></span>networking engineer &middot; java / llm developer</div>
+  <h1>Merhawi <span class="accent">Ferede</span></h1>
+  <p class="lede">I'm a <strong>networking engineer</strong> on <strong>NVIDIA GB200/GB300</strong> AI infrastructure, troubleshooting the routers, switches, and optical links that keep AI clusters running. I'm also a <strong>Java developer</strong> building <strong>Spring Boot</strong> services with <strong>LLMs</strong> wired into the application logic.</p>
+
+  <div class="focus">
+    <div class="focus-card">
+      <div class="focus-label">Infrastructure &amp; networking</div>
+      <span class="pill">GB200/GB300</span><span class="pill">Routers</span><span class="pill">Switches</span><span class="pill">Optical</span><span class="pill">Linux</span>
+    </div>
+    <div class="focus-card">
+      <div class="focus-label">Software &amp; AI</div>
+      <span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">REST APIs</span><span class="pill">LLM integration</span><span class="pill">PostgreSQL</span>
+    </div>
+  </div>
+  <div class="cta-row">
+    <a class="btn" href="#projects">View projects</a>
+    <a class="btn ghost" href="mailto:merafere@gmail.com">Email me</a>
+    <a class="btn ghost" href="https://www.linkedin.com/in/merhawi-ferede-dev" target="_blank" rel="noopener">LinkedIn</a>
+    <a class="btn ghost" href="https://github.com/merhawi7" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <div class="card">
+    <div class="terminal-screen">
+      <div><span class="prompt">$</span> whoami</div>
+      <div class="out">Merhawi Ferede — Networking Engineer / Java &amp; LLM Developer</div>
+      <div><span class="prompt">$</span> cat role.txt</div>
+      <div class="out">5+ yrs at AWS &amp; Google data centers (GB200/GB300 AI infra) &middot; ~2 yrs Java/Spring Boot</div>
+      <div><span class="prompt">$</span> ./deploy-ticket.sh --status</div>
+      <div style="color:#8a97ad;">used by 30+ engineers &middot; ~15min manual process &rarr; one command</div>
+      <div style="margin-top:8px;"><span class="cursor"></span></div>
+    </div>
+  </div>
+</header>
+
+<section id="about" class="view">
+  <div class="section-eyebrow">01 &middot; about</div>
+  <h2 class="section-title">Both sides of the stack</h2>
+  <p class="body-text">I work both sides of the stack. At AWS and Google data centers, I troubleshoot Linux systems, routers, and switches inside AI infrastructure environments running NVIDIA GB200/GB300 systems — real hardware, real tickets, real uptime. As a Java developer, I build backend and full-stack applications with Spring Boot, REST APIs, and PostgreSQL, and I've started wiring LLMs and generative AI directly into that software — not as a chat widget bolted on the side, but as logic that actually drives what the application does. Five-plus years keeping systems reliable, nearly two building on top of them.</p>
+</section>
+
+<section id="skills" class="view">
+  <div class="section-eyebrow">02 &middot; skills</div>
+  <h2 class="section-title">Tools and stack</h2>
+  <div class="skills-grid">
+    <div class="skill-card"><h3>Languages</h3><span class="pill">Java</span><span class="pill">SQL</span><span class="pill">JavaScript</span><span class="pill">HTML</span><span class="pill">CSS</span></div>
+    <div class="skill-card"><h3>Backend</h3><span class="pill">Spring Boot</span><span class="pill">Spring MVC</span><span class="pill">REST APIs</span><span class="pill">JDBC</span><span class="pill">Maven</span><span class="pill">JUnit</span></div>
+    <div class="skill-card"><h3>Frontend</h3><span class="pill">React.js</span><span class="pill">Angular</span><span class="pill">Vue.js</span></div>
+    <div class="skill-card"><h3>Cloud / DevOps</h3><span class="pill">AWS</span><span class="pill">GCP</span><span class="pill">Cloud Run</span><span class="pill">GitHub Actions</span><span class="pill">CI/CD</span></div>
+    <div class="skill-card"><h3>Systems</h3><span class="pill">Linux</span><span class="pill">Git</span><span class="pill">PostgreSQL</span><span class="pill">Bash</span></div>
+    <div class="skill-card"><h3>Infrastructure</h3><span class="pill">Networking</span><span class="pill">Routers</span><span class="pill">Switches</span><span class="pill">GB200/GB300</span></div>
+  </div>
+</section>
+
+<section id="experience" class="view">
+  <div class="section-eyebrow">03 &middot; experience</div>
+  <h2 class="section-title">Where I've worked</h2>
+  <div class="job-card">
+    <div class="dates">2025 — Present</div>
+    <div class="role">Junior Software Developer</div>
+    <div class="org">Reality AI Lab (Remote)</div>
+    <ul><li>Built scalable REST APIs using Java and Spring Boot</li><li>Deployed cloud-native apps on GCP Cloud Run and Cloud Functions</li><li>Integrated AI/LLM-powered chatbot features into enterprise applications</li></ul>
+  </div>
+  <div class="job-card">
+    <div class="dates">2024 — Present</div>
+    <div class="role">Data Center Operations &amp; Networking Engineering</div>
+    <div class="org">AWS</div>
+    <ul><li>Network engineering for high-performance AI clusters: routers, switches, and optical links</li><li>Troubleshot Linux systems, routers, switches, and optical infrastructure</li><li>Supported AI infrastructure environments (NVIDIA GB200/GB300 systems)</li></ul>
+  </div>
+  <div class="job-card">
+    <div class="dates">2024 — 2025</div>
+    <div class="role">Java Developer Trainee</div>
+    <div class="org">Revature</div>
+    <ul><li>Developed full-stack applications using Java, Spring Boot, REST APIs, PostgreSQL</li><li>Integrated Vue.js frontend with backend services</li></ul>
+  </div>
+</section>
+
+<section id="projects" class="view">
+  <div class="section-eyebrow">04 &middot; projects</div>
+  <h2 class="section-title">What I've built</h2>
+
+  <div class="proj-card">
+    <div class="path">~/data-center/deploy-ticket.sh</div>
+    <span class="badge amber">new &middot; in production</span>
+    <div class="name">Ticket-to-Deploy Automation Script</div>
+    <div class="desc">A Linux/Bash CLI tool for network deployment work at the data center. Takes a ticket straight into the terminal and runs the whole workflow automatically.</div>
+    <div class="stack"><span class="pill">Bash</span><span class="pill">Linux CLI</span><span class="pill">Ticketing Systems</span><span class="pill">Automation</span></div>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/console-atm</div>
+    <span class="badge amber">java &middot; agentic ai</span>
+    <div class="name">AI-Powered Console ATM</div>
+    <div class="desc">A Java console ATM with natural-language input through an LLM API, routed to a Java execution engine, screened by an ML fraud model in real time.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">OpenAI API</span><span class="pill">Jackson</span><span class="pill">Weka</span><span class="pill">DL4J</span></div>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/banking-api</div>
+    <div class="name">Banking &amp; Money Transfer REST API</div>
+    <div class="desc">Secure banking backend with JWT authentication, role-based access control, and an LLM-based chatbot for customer support.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">PostgreSQL</span><span class="pill">JWT</span></div>
+  </div>
+
+  <div class="proj-card featured">
+    <div class="path">~/habits/streaktrack</div>
+    <span class="badge">new &middot; full-stack</span>
+    <div class="name">StreakTrack</div>
+    <div class="desc">Habit-tracking web app with account signup, guest mode, and a live leaderboard. Backend handles real auth and persistence, not a mockup.</div>
+    <div class="stack"><span class="pill">Backend API</span><span class="pill">Auth</span><span class="pill">Leaderboard</span><span class="pill">Render hosting</span></div>
+    <a class="btn" href="https://merhawi7.github.io/streaktrack-backend/" target="_blank">View project →</a>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/reservation-platform</div>
+    <div class="name">Digital Banking Reservation Platform</div>
+    <div class="desc">Backend scheduling system for banking service appointments, with REST APIs for booking and workflow automation.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">REST APIs</span></div>
+  </div>
+
+  <div class="proj-card">
+    <div class="path">~/java/banking-ops-cli</div>
+    <div class="name">Banking Operations System (CLI)</div>
+    <div class="desc">A Java CLI application built with OOP and file handling to manage banking records and transaction workflows.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">OOP</span><span class="pill">File I/O</span></div>
+  </div>
+
+  <div class="proj-card featured">
+    <div class="path">~/java/ledger-banking-engine</div>
+    <span class="badge amber">new &middot; live demo</span>
+    <div class="name">Ledger — Core Banking Engine</div>
+    <div class="desc">A banking engine modeling the account logic behind a real bank's ledger: checking and savings accounts with overdraft support, transfers with notes and counterparty tracking, timestamped transaction history, and monthly interest calculation. It started as a Java console app, then I rebuilt it as a Spring Boot REST API and deployed it, so anyone can click through it live.</div>
+    <div class="stack"><span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">REST API</span><span class="pill">Docker</span><span class="pill">OOP</span></div>
+    <a class="btn" href="https://lnkd.in/e-q-rM_c" target="_blank" rel="noopener">View project →</a><a class="btn ghost" href="https://lnkd.in/e9spudmC" target="_blank" rel="noopener">Source code →</a>
+  </div>
+
+  <div class="proj-card featured">
+    <div class="path">~/games/mera-stock-showdown</div>
+    <span class="badge amber">new &middot; js game</span>
+    <div class="name">MERA — Stock Agent Showdown</div>
+    <div class="desc">A browser game where you run the desk between two rival trading agents. ARIA chases momentum and breakouts, VESPER hunts oversold names and mean reversion. Approve or reject each pitch in 12 seconds across ten rounds on a simulated market, or watch the two agents play each other. Best runs are saved in the browser. The whole game is a single HTML file with no dependencies.</div>
+    <div class="stack"><span class="pill">JavaScript</span><span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">GitHub Pages</span></div>
+    <div class="approved">✓ Approved by the Handshake team and featured in Learn Hub</div><br>
+    <a class="btn" href="https://merhawi7.github.io/mera-stock-showdown/" target="_blank">View project →</a><a class="btn ghost" href="https://github.com/merhawi7/mera-stock-showdown" target="_blank">Source →</a>
+  </div>
+</section>
+
+<section id="certs" class="view">
+  <div class="section-eyebrow">05 &middot; certifications</div>
+  <h2 class="section-title">Certifications</h2>
+  <div class="certs-card">
+    <ul>
+      <li>AWS Certified Solutions Architect – Associate</li>
+      <li>REST API Development with Spring Boot</li>
+      <li>Spring Framework for Java Development</li>
+      <li>Java 8 Programming Fundamentals</li>
+      <li>Object-Oriented Programming in Java</li>
+      <li>Generative AI for Java and Spring Development</li>
+    </ul>
+  </div>
+</section>
+
+<section id="debug" class="view">
+  <div class="section-eyebrow">06 &middot; debugging notes</div>
+  <h2 class="section-title">StreakTrack: the 403 that wasn't permitAll()</h2>
+
+  <div class="debug-card">
+    <h4>The bug</h4>
+    <p style="margin-bottom:10px;">Deployed the Spring Boot backend to Render. <code>POST /api/auth/register</code> and <code>POST /api/auth/login</code> both returned <span class="status">HTTP 403 Forbidden</span> — even though everything on paper looked correct:</p>
+    <ul class="checklist">
+      <li>Spring Boot 3.3.4, Spring Security configured</li>
+      <li><code>/api/auth/**</code> set to <code>permitAll()</code></li>
+      <li>CSRF disabled, CORS configured</li>
+      <li>Controller mapping and request DTO matched</li>
+      <li>Backend running fine on Render</li>
+    </ul>
+  </div>
+
+  <div class="debug-card">
+    <h4>Root cause</h4>
+    <p>It wasn't the security config or the controller — it was the custom JWT filter. The filter ran on every request, including public auth endpoints, and rejected requests with no token before they ever reached the <code>permitAll()</code> rule. <strong style="color:#f2f5fa;">permitAll() only tells Spring Security's authorization layer to allow the route — it doesn't stop custom filters in the chain from running and rejecting the request first.</strong></p>
+  </div>
+
+  <div class="debug-card">
+    <h4>The fix</h4>
+    <p>Updated the JWT filter to skip public auth routes (<code>/api/auth/register</code>, <code>/api/auth/login</code>) and let unauthenticated requests to those paths pass through untouched, instead of blocking them before the security chain even evaluated <code>permitAll()</code>.</p>
+    <div style="margin-top:10px;"><span class="fixed-status">Resolved — both endpoints return 200</span></div>
+    <div class="lesson">Lesson: <code>permitAll()</code> governs authorization, not the filter chain. Any custom filter still runs first and can reject a request before Spring Security's rules are even checked.</div>
+  </div>
+
+  <h2 class="section-title" style="margin-top:36px;">Ledger — Core Banking Engine: how it's built, and what I fixed along the way</h2>
+
+  <div class="debug-card">
+    <h4>How it works</h4>
+    <p style="margin-bottom:10px;">Ledger models the account logic behind a real bank's ledger, built around a small, focused class hierarchy:</p>
+    <ul class="checklist">
+      <li><code>Account</code> — abstract base class holding balance, owner, and transaction history</li>
+      <li><code>CheckingAccount</code> / <code>SavingsAccount</code> — subclasses overriding available-funds rules (overdraft vs. interest)</li>
+      <li><code>Transaction</code> — an immutable log entry with timestamp, type, amount, optional note, and optional counterparty</li>
+      <li><code>Bank</code> — owns all accounts, opens new ones, and coordinates transfers between them</li>
+      <li><code>BankApp</code> — console menu that wires it all together (deposit, withdraw, transfer, view history, apply interest)</li>
+    </ul>
+  </div>
+
+  <div class="debug-card">
+    <h4>The bug</h4>
+    <p>Two separate issues showed up while building this. First, <code>CheckingAccount</code>'s $100 overdraft support was implemented by duplicating balance-adjustment logic directly in the subclass, which got messy and error-prone fast. Second, <code>Bank.transfer()</code> called the normal <code>withdraw()</code>/<code>deposit()</code> methods <em>and</em> a separate logging call — which meant every transfer wrote <span class="status">two transaction entries per account</span> instead of one.</p>
+  </div>
+
+  <div class="debug-card">
+    <h4>Root cause</h4>
+    <p><code>Account</code> kept its balance field fully private with no shared hook for subclasses to safely adjust it, so <code>CheckingAccount</code> had no clean way to plug in overdraft rules other than re-implementing withdraw from scratch. Separately, <code>withdraw()</code>/<code>deposit()</code> already logged a transaction internally — so the extra manual logging call after them was redundant, and nothing caught the duplication because each call looked correct in isolation.</p>
+  </div>
+
+  <div class="debug-card">
+    <h4>The fix</h4>
+    <p>Refactored <code>Account</code> to expose two protected hooks: <code>getAvailableFunds()</code> (which <code>CheckingAccount</code> overrides to add the $100 overdraft) and <code>applyBalanceChange()</code> (a single method that adjusts the balance <em>and</em> logs exactly one transaction). Added dedicated <code>transferOut()</code>/<code>transferIn()</code> methods so each leg of a transfer logs once, with the counterparty's account number and name attached — instead of double-logging through generic withdraw/deposit calls.</p>
+    <div style="margin-top:10px;"><span class="fixed-status">Resolved — every transaction now logs exactly once, overdraft logic lives in one place</span></div>
+    <div class="lesson">Lesson: when a subclass needs to bend a rule (like allowing overdraft), give it a single protected hook to override — not a reason to re-implement the whole method.</div>
+  </div>
+
+  <div class="debug-card">
+    <h4>Shipped since</h4>
+    <p>Ledger started as a console app. I rebuilt it as a Spring Boot REST API, packaged it with Docker, and deployed it, so the same account logic can now be tried through a live demo instead of just read about. The bug I'm glad I caught along the way: a ledger that writes two entries per transfer quietly corrupts its own history. The fix was to log exactly once per balance change, whichever path triggers it.</p>
+    <div style="margin-top:10px;"><span class="fixed-status">Live — REST API deployed, demo open to anyone</span></div>
+    <div style="margin-top:14px;"><a class="btn" href="https://lnkd.in/e-q-rM_c" target="_blank" rel="noopener">View project →</a><a class="btn ghost" href="https://lnkd.in/e9spudmC" target="_blank" rel="noopener">Source code →</a></div>
+  </div>
+
+  <div class="debug-card">
+    <h4>What's next</h4>
+    <ul class="checklist">
+      <li>Persist accounts to a real database (PostgreSQL) instead of in-memory storage</li>
+      <li>Add JUnit tests covering transfers, overdraft limits, and interest calculations</li>
+      <li>Add concurrency safety for simultaneous transactions on the same account</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title" style="margin-top:36px;">MERA — Stock Agent Showdown: three silent failures between a finished build and a live link</h2>
+
+  <div class="debug-card">
+    <h4>The bug</h4>
+    <p style="margin-bottom:10px;">The game was complete as a single <code>index.html</code>. Shipping it to GitHub Pages surfaced three failures, none of which raised an error message:</p>
+    <ul class="checklist">
+      <li><strong style="color:#f2f5fa;">Repo setup:</strong> the file name <code>index.html</code> was entered in the repository <em>name</em> field</li>
+      <li><strong style="color:#f2f5fa;">Upload:</strong> the file landed as <span class="status">index (1).html</span> instead of <code>index.html</code></li>
+      <li><strong style="color:#f2f5fa;">Publish:</strong> Pages reported <span class="status">currently disabled</span> and the live URL served nothing</li>
+    </ul>
+  </div>
+
+  <div class="debug-card">
+    <h4>Root cause</h4>
+    <ul class="checklist">
+      <li><strong style="color:#f2f5fa;">File name vs. repo name.</strong> The repo name becomes part of the URL path, so the site would have been served from <code>username.github.io/index.html/</code>.</li>
+      <li><strong style="color:#f2f5fa;">Duplicate download.</strong> The browser auto-appended "(1)" to a second download of the same file. Pages resolves a site's default document by exact filename, and <code>index (1).html</code> doesn't match, so the root would have returned a 404.</li>
+      <li><strong style="color:#f2f5fa;">Commit is not deploy.</strong> A push only stores files. Pages has no publish source until a branch and folder are selected and saved.</li>
+    </ul>
+  </div>
+
+  <div class="debug-card">
+    <h4>The fix</h4>
+    <ul class="checklist">
+      <li>Created the repo as <code>mera-stock-showdown</code>, set to Public so the source is readable and the app is playable</li>
+      <li>Renamed the file to <code>index.html</code> in GitHub's editor and committed the change</li>
+      <li>Settings → Pages → Deploy from a branch → <code>main</code> → <code>/ (root)</code> → Save</li>
+      <li>Confirmed the "pages build and deployment" workflow completed, then loaded the URL in a private window to rule out a cached 404</li>
+    </ul>
+    <div style="margin-top:10px;"><span class="fixed-status">Resolved — live at merhawi7.github.io/mera-stock-showdown, source public</span></div>
+    <div class="lesson">Lesson: static hosting fails silently, so validate the deployment before debugging the code. Check the entry filename, the publish source, then the cache, in that order.</div>
+  </div>
+
+  <div class="debug-card">
+    <h4>Pre-deploy audit</h4>
+    <p>Before publishing, I audited the file for anything that only works in its original environment: API calls, custom storage APIs, and external scripts. It had none. The only external request is Google Fonts, with a fallback stack, and best runs use <code>localStorage</code>, which works on GitHub Pages and stays private to each player's browser. The result is a zero-dependency single-file deploy.</p>
+  </div>
+</section>
+
+<section id="contact" class="view">
+  <div class="section-eyebrow">07 &middot; contact</div>
+  <h2 class="section-title">Reach out</h2>
+  <div class="card contact-footer">
+    <div class="contact-lines">
+      <p class="body-text" style="margin-bottom:12px;">Columbus, Ohio. Open to Java/backend and AI-adjacent roles, and always glad to talk infrastructure.</p>
+      <div class="line"><span class="k">mail</span><a href="mailto:merafere@gmail.com">merafere@gmail.com</a></div>
+      <div class="line"><span class="k">tel</span><a href="tel:+14436839974">(443) 683-9974</a></div>
+      <div class="line"><span class="k">link</span><a href="https://www.linkedin.com/in/merhawi-ferede-dev" target="_blank" rel="noopener">linkedin.com/in/merhawi-ferede-dev</a></div>
+      <div class="line"><span class="k">code</span><a href="https://github.com/merhawi7" target="_blank" rel="noopener">github.com/merhawi7</a></div>
+    </div>
+    <a class="site-qr" href="https://steady-granita-a49358.netlify.app/" target="_blank" rel="noopener">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATYAAAE2AQAAAADDx4MEAAACMElEQVR4nO2aTYrcMBBGX0UGL2XIAXIU9w3mSLmadJQ5QIO8HLD5spD815sMhKh7PNKisa0HdrWo+qpKMvGZsfz4FAaN+zcOhe1KmpGSE2MC8PM65edXt+NCnJckzRCtl91O05IkhS9hx2W4xcwGyF4Rf83kNQoA0cye/X3fiese7lc5WTrGtPy/9zbu71wcFoMpO0TF9zbuzDlJCRiTU45X0friKKOkZ3/fd+KO+VXw8+NPGS2/qsWVDCqPxDnf3WfaelTijg6h5AS4HKpKquslxrYetTgUcNr/+3wbKIFMSk4KLV7V4sirkEOVdukoz0qR3tajFncIVSU2JQCccro1qsWrmtzqEACjZtj0I89mTWn+UY8b33uBl2DqJaXFHvLd1r+qx3XEm8PGd0NxcBDf5q2H4mTgMPzL23EVrgMWAy/AJwx62dbXEtNPGEPb/6jEdeDvneJw73bZENOA4ZfyLA73V7fjKtxWkOcyIzfdT/VHlvxXt+MqXJHtnFr5edsk5JgDt/yqGkcp+3JV7rQ2Tcit3eI9rf6oxa21uLbcdi1HSuPXt35iTe7Y3w3AYas2X7V+SWUuWhm5QcLUUcpDFoOpb/tRdbk9XvkPKw4xmSnsnff0Fey4BNcBSwf+DvEtycYEZQN9MsCnp37fd+PYFIJV1N2mGk0/nspF65D0kd1DAbDb1LfzcJW5/XwJ2A2nTcWz99jvph+1uPP5Ep1PV5cascWrepy18+0vxf0BYWO1MgGeG8UAAAAASUVORK5CYII=" alt="QR code">
+      <div>
+        <div class="label">Full portfolio &amp; live site</div>
+        <div class="url">steady-granita-a49358.netlify.app</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<footer class="page-footer">built by hand, in Java-adjacent spirit · © 2026 Merhawi Ferede</footer>
+
+</div>
+<script>
+(function () {
+  var ids = ['home', 'about', 'skills', 'experience', 'projects', 'certs', 'debug', 'contact'];
+  var views = {};
+  ids.forEach(function (id) { views[id] = document.getElementById(id); });
+  var links = [].slice.call(document.querySelectorAll('nav .links a'));
+
+  function show(id) {
+    if (!views[id]) id = 'home';
+    var all = (id === 'home');
+    document.body.classList.toggle('is-home', all);
+    ids.forEach(function (k) { if (views[k]) views[k].hidden = !(all || k === id); });
+    links.forEach(function (a) {
+      var on = a.getAttribute('href') === '#' + id;
+      a.classList.toggle('active', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function idFromHash() { return (location.hash || '').replace('#', '') || 'home'; }
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (!views[id]) return;
+    e.preventDefault();
+    try { history.pushState(null, '', '#' + id); } catch (err) { /* sandboxed preview: skip URL update */ }
+    show(id);
+  });
+
+  window.addEventListener('popstate', function () { show(idFromHash()); });
+  window.addEventListener('hashchange', function () { show(idFromHash()); });
+
+  show(idFromHash());
+})();
+</script>
+</body>
+</html>
